@@ -4,72 +4,26 @@ project(FastBoot)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(AML_PATH "/data/data/com.termux/files/home/Android/shared/amlmods")
+add_library(${PROJECT_NAME} SHARED
+	include/mod/config.cpp
 
-add_library(FastBoot SHARED
-	${AML_PATH}/include/mod/config.cpp
-	${AML_PATH}/include/mod/logger.cpp
-
-	src/Main.cpp
-	src/SocialClub.cpp
-	src/StartMode.cpp
+	src/main.cpp
+	src/socialclub.cpp
+	src/startmode.cpp
 )
 
-target_include_directories(FastBoot PRIVATE
-	${AML_PATH}/include
+target_include_directories(${PROJECT_NAME} PRIVATE
+	${CMAKE_SOURCE_DIR}/include
 )
 
-# Common flags
-target_compile_options(FastBoot PRIVATE
-	-Wall
-	-Wextra
-)
-
-set_source_files_properties(
-	${AML_PATH}/include/mod/logger.cpp
-	${AML_PATH}/include/mod/config.cpp
-	PROPERTIES
-	COMPILE_OPTIONS "-Wno-unused-parameter;-Wno-sign-compare"
-)
-
-# Debug
-target_compile_options(FastBoot PRIVATE
-	$<$<CONFIG:Debug>:
-		-O0
-		-g3
-		-fno-omit-frame-pointer
-	>
-)
-
-target_link_options(FastBoot PRIVATE
-	$<$<CONFIG:Debug>:
-		-g3
-	>
-)
-
-# Release
-target_compile_options(FastBoot PRIVATE
-	$<$<CONFIG:Release>:
-		-O2
-		-flto
-		-fvisibility=hidden
-		-fomit-frame-pointer
-		-fno-exceptions
-		-fno-rtti
-		-ffunction-sections
-		-fdata-sections
-	>
-)
-
-target_link_options(FastBoot PRIVATE
-	$<$<CONFIG:Release>:
-		-flto
-		-s
-		-Wl,--gc-sections
-		-Wl,--strip-all
-	>
-)
-
-target_link_libraries(FastBoot PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE
 	log
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+	-O3
+)
+
+target_link_options(${PROJECT_NAME} PRIVATE
+	-s
 )
